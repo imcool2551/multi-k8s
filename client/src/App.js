@@ -17,14 +17,14 @@ function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Fib Calculator
+            Fib Calculator version 3
           </a>
           <Link to="/">Home</Link>
           <Link to="/otherpage">Other Page</Link>
         </header>
         <div>
           <Route exact path="/" component={Fib} />
-          <Route path="/other/page" component={OtherPage} />
+          <Route path="/otherpage" component={OtherPage} />
         </div>
       </div>
     </Router>
