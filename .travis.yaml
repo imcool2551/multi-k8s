@@ -2,6 +2,10 @@ sudo: required
 # Preinstall docker on Travis VM
 services:
   - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
   # Install Google Cloud SDK
@@ -9,5 +13,21 @@ before_install:
   - source $HOME/google-cloud-sdk/path.bash.inc
   # Install kubectl
   - gcloud components update kubectl
-  # Allow Google Cloud SDK to access Google Account through encrypted-IAM-Json (Need travis login)
+  # Allow Travis to access Google Account by storing encrypted-IAM-Json as env-var (Need travis login)
   - gcloud auth actiavate-service-account --key-file service-account.json
+  # Set gcloud CLI to use multi-k8s project and its cluster
+  - gcloud config set project logical-iridium-302417
+  - gcloud config set compute/zone asia-east1-a
+  - gcloud container clusters get-credentials multi-cluster-1
+  # Log in to docker and build test image
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t imcool2551/react-test -f ./client/Dockerfile.dev ./client
+
+  script:
+    - docker run -e CI=true imcool2551/react-test npm test
+
+  deploy:
+    provider: script
+    script: bash ./deploy.sh
+    on:
+      branch: master
