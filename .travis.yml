@@ -14,7 +14,7 @@ before_install:
   # Install kubectl
   - gcloud components update kubectl
   # Allow Travis to access Google Account by storing encrypted-IAM-Json as env-var (Need travis login)
-  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud auth activate-service-account --key-file=service-account.json
   # Set gcloud CLI to use multi-k8s project and its cluster
   - gcloud config set project logical-iridium-302417
   - gcloud config set compute/zone asia-east1-a
